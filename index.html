@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8" />
+<head>
+    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css"/>
+    
+    <!-- Librerías para llamar la función cluster map -->
+    <!--
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.5.0/MarkerCluster.Default.css" />
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.5.0/leaflet.markercluster.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    -->
+
+    <!-- Script para cargar el archivo GeoJSON -->
+    <script type="text/javascript" src="poligonos_zonas_v63_volbajo.js"></script>
+    <!-- Scripts y estilos para la búsqueda en el mapa -->
+    <script src="leaflet-search-master/src/leaflet-search.js"></script>
+    <link rel="stylesheet" href="leaflet-search-master/src/leaflet-search.css" />
+    
+    <!-- Estilos para el mapa -->
+    <style>
+        #map { 
+            width: 100%;
+            height: 900px;
+            box-shadow: 5px 5px 5px #888;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        // Inicializar el mapa
+        var map = L.map("map").setView([19.506, -99.163], 10);
+        
+        // Añadir capa de OpenStreetMap
+        L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+            maxZoom: 18
+        }).addTo(map);
+        
+        // Función para asignar colores según la categoría
+        function getColor(Estado_FM) {
+            switch (Estado_FM) {
+                case 'Cerrar': return '#BE0707';
+                case 'Abierto': return '#5DE10C';
+                default: return '#0B7492';
+            }
+        }
+
+        // Función para definir el estilo de cada feature
+        function style(feature) {
+            return {
+                fillColor: getColor(feature.properties.Estado_FM),
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.5
+            };
+        }
+
+        // Función para los popups
+        function onEachFeature(feature, layer) {
+            if (feature.properties) {
+                layer.bindPopup('<p> Promedio de volumen: ' + feature.properties.Avrg_Vol + '</p><p>Decisión: ' + feature.properties.Estado_FM + '</p><p>Zonificación: ' + feature.properties.zonificacion + '</p>');
+            }
+        }
+
+        
+
+        // Cargar la capa GeoJSON con estilo y popups
+        var layerGroup = L.geoJSON(bajovol, {
+            style: style,
+            onEachFeature: onEachFeature
+        }).addTo(map);
+
+
+       
+
+
+    </script>
+</body> 
+</html>
